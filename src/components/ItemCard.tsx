@@ -1,10 +1,10 @@
-import React from "react"
 import { Item } from '../types';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import React from 'react';
 
 interface ItemCardProps {
   item: Item;
@@ -14,6 +14,8 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ item, onEdit, onDelete, index }: ItemCardProps) {
+  const finalPrice = item.price - (item.price * item.discount / 100);
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,8 +25,8 @@ export function ItemCard({ item, onEdit, onDelete, index }: ItemCardProps) {
       className="w-full"
     >
       <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-        <div className="flex flex-col sm:flex-row gap-4 p-4">
-          <div className="w-full sm:w-48 h-48 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row gap-3 p-3">
+          <div className="w-full sm:w-32 h-32 flex-shrink-0">
             <ImageWithFallback
               src={item.image}
               alt={item.name}
@@ -32,29 +34,47 @@ export function ItemCard({ item, onEdit, onDelete, index }: ItemCardProps) {
             />
           </div>
           
-          <div className="flex-1 space-y-3">
+          <div className="flex-1 space-y-2">
             <div className="flex justify-between items-start gap-2">
               <div>
                 <h3 className="text-amber-900">{item.name}</h3>
-                <span className="inline-block px-2 py-1 bg-amber-100 text-amber-800 rounded text-sm mt-1">
-                  {item.category}
-                </span>
+                <div className="flex gap-2 mt-1">
+                  <span className="inline-block px-2 py-1 bg-amber-100 text-amber-800 rounded text-sm">
+                    {item.category}
+                  </span>
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm capitalize">
+                    {item.gender}
+                  </span>
+                </div>
               </div>
-              <p className="text-green-700 flex-shrink-0">₹{item.price}</p>
+              <div className="flex-shrink-0 text-right">
+                {item.discount > 0 ? (
+                  <>
+                    <p className="text-green-700">₹{finalPrice.toFixed(0)}</p>
+                    <p className="text-gray-400 line-through text-sm">₹{item.price}</p>
+                    <p className="text-red-600 text-sm">{item.discount}% off</p>
+                  </>
+                ) : (
+                  <p className="text-green-700">₹{item.price}</p>
+                )}
+              </div>
             </div>
             
-            <p className="text-gray-600 text-sm">{item.description}</p>
+            <p className="text-gray-600 text-sm line-clamp-2">{item.description}</p>
             
             <div className="space-y-1">
               <p className="text-sm text-gray-700">Features:</p>
-              <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                {item.features.map((feature, idx) => (
-                  <li key={idx}>{feature}</li>
+              <ul className="list-disc list-inside text-sm text-gray-600 space-y-0.5">
+                {item.features.slice(0, 2).map((feature, idx) => (
+                  <li key={idx} className="line-clamp-1">{feature}</li>
                 ))}
+                {item.features.length > 2 && (
+                  <li className="text-gray-500">+{item.features.length - 2} more</li>
+                )}
               </ul>
             </div>
             
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2 pt-1">
               <Button
                 onClick={() => onEdit(item)}
                 variant="outline"

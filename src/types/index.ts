@@ -5,6 +5,8 @@ export interface Item {
   description: string;
   features: string[];
   price: number;
+  discount: number;
+  gender: 'men' | 'women' | 'all';
   image: string;
 }
 
@@ -12,7 +14,7 @@ export interface Order {
   id: string;
   itemName: string;
   customerName: string;
-  status: 'pending' | 'processing' | 'shipping' | 'delivered';
+  status: 'processing' | 'shipping' | 'delivered' | 'cancelled';
   date: string;
   total: number;
 }

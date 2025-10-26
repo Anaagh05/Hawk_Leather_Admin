@@ -1,5 +1,5 @@
-import React from "react"
 import { useState, useEffect } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -136,6 +136,36 @@ export function EditItemDialog({ item, open, onClose, onSave }: EditItemDialogPr
               onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="discount">Discount (%)</Label>
+            <Input
+              id="discount"
+              type="number"
+              value={formData.discount}
+              onChange={(e) => setFormData({ ...formData, discount: Number(e.target.value) })}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gender">Gender</Label>
+            <Select
+              value={formData.gender}
+              onValueChange={(value: 'men' | 'women' | 'all') =>
+                setFormData({ ...formData, gender: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="men">Men</SelectItem>
+                <SelectItem value="women">Women</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

@@ -8,6 +8,8 @@ export const mockItems: Item[] = [
     description: 'A timeless leather tote bag perfect for everyday use',
     features: ['100% Genuine Leather', 'Multiple Compartments', 'Adjustable Straps', 'Handcrafted'],
     price: 4500,
+    discount: 10,
+    gender: 'women',
     image: 'https://images.unsplash.com/photo-1650542218150-5e59a58d4312?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwYmFnJTIwYnJvd258ZW58MXx8fHwxNzYwMjU3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -17,6 +19,8 @@ export const mockItems: Item[] = [
     description: 'Professional briefcase for business executives',
     features: ['Premium Leather', 'Laptop Compartment', 'Water Resistant', 'Durable Hardware'],
     price: 6500,
+    discount: 15,
+    gender: 'men',
     image: 'https://images.unsplash.com/photo-1650542218150-5e59a58d4312?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwYmFnJTIwYnJvd258ZW58MXx8fHwxNzYwMjU3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -26,6 +30,8 @@ export const mockItems: Item[] = [
     description: 'Stylish messenger bag with vintage appeal',
     features: ['Distressed Leather', 'Cross-body Strap', 'Quick Access Pocket', 'Classic Design'],
     price: 3800,
+    discount: 5,
+    gender: 'all',
     image: 'https://images.unsplash.com/photo-1650542218150-5e59a58d4312?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwYmFnJTIwYnJvd258ZW58MXx8fHwxNzYwMjU3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -35,6 +41,8 @@ export const mockItems: Item[] = [
     description: 'Premium leather wallet with RFID protection',
     features: ['RFID Blocking', 'Multiple Card Slots', 'Slim Design', 'Soft Leather'],
     price: 1200,
+    discount: 0,
+    gender: 'men',
     image: 'https://images.unsplash.com/photo-1689844495806-321b5adaf5d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwcHVyc2UlMjB3YWxsZXR8ZW58MXx8fHwxNzYwMzQ0NjYzfDA&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -44,6 +52,8 @@ export const mockItems: Item[] = [
     description: 'Elegant clutch perfect for special occasions',
     features: ['Compact Design', 'Chain Strap', 'Premium Finish', 'Interior Pockets'],
     price: 2200,
+    discount: 20,
+    gender: 'women',
     image: 'https://images.unsplash.com/photo-1689844495806-321b5adaf5d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwcHVyc2UlMjB3YWxsZXR8ZW58MXx8fHwxNzYwMzQ0NjYzfDA&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -53,6 +63,8 @@ export const mockItems: Item[] = [
     description: 'Versatile leather belt for formal and casual wear',
     features: ['Genuine Leather', 'Reversible', 'Adjustable', 'Metal Buckle'],
     price: 800,
+    discount: 10,
+    gender: 'all',
     image: 'https://images.unsplash.com/photo-1684510334550-0c4fa8aaffd1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwYmVsdCUyMGFjY2Vzc29yaWVzfGVufDF8fHx8MTc2MDM0NDY2M3ww&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -62,6 +74,8 @@ export const mockItems: Item[] = [
     description: 'Premium designer belt with luxury finish',
     features: ['Italian Leather', 'Gold Buckle', 'Handcrafted', 'Gift Box'],
     price: 1500,
+    discount: 0,
+    gender: 'men',
     image: 'https://images.unsplash.com/photo-1684510334550-0c4fa8aaffd1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwYmVsdCUyMGFjY2Vzc29yaWVzfGVufDF8fHx8MTc2MDM0NDY2M3ww&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -71,6 +85,8 @@ export const mockItems: Item[] = [
     description: 'Spacious leather backpack for travel enthusiasts',
     features: ['Large Capacity', 'Padded Straps', 'Laptop Sleeve', 'Water Resistant'],
     price: 5200,
+    discount: 12,
+    gender: 'all',
     image: 'https://images.unsplash.com/photo-1650542218150-5e59a58d4312?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwYmFnJTIwYnJvd258ZW58MXx8fHwxNzYwMjU3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -80,6 +96,8 @@ export const mockItems: Item[] = [
     description: 'Compact crossbody purse for daily essentials',
     features: ['Lightweight', 'Adjustable Strap', 'Zipper Closure', 'Multiple Colors'],
     price: 1800,
+    discount: 8,
+    gender: 'women',
     image: 'https://images.unsplash.com/photo-1689844495806-321b5adaf5d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwcHVyc2UlMjB3YWxsZXR8ZW58MXx8fHwxNzYwMzQ0NjYzfDA&ixlib=rb-4.1.0&q=80&w=1080'
   }
 ];
@@ -89,7 +107,7 @@ export const mockOrders: Order[] = [
     id: 'ORD001',
     itemName: 'Classic Leather Tote',
     customerName: 'Rahul Sharma',
-    status: 'pending',
+    status: 'processing',
     date: '2025-10-13',
     total: 4500
   },
@@ -121,7 +139,7 @@ export const mockOrders: Order[] = [
     id: 'ORD005',
     itemName: 'Ladies Clutch',
     customerName: 'Kavita Reddy',
-    status: 'pending',
+    status: 'cancelled',
     date: '2025-10-13',
     total: 2200
   },

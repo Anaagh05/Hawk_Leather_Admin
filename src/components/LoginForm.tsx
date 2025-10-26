@@ -1,10 +1,10 @@
-import React from "react"
 import { useState } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
+import React from 'react';
 
 interface LoginFormProps {
   onLogin: () => void;

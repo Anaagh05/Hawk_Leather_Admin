@@ -1,5 +1,5 @@
-import React from "react"
 import { useState } from 'react';
+import React from 'react';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -21,6 +21,8 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
     category: 'Bags' as 'Bags' | 'Purses' | 'Belts',
     description: '',
     price: '',
+    discount: '',
+    gender: 'all' as 'men' | 'women' | 'all',
     image: ''
   });
   const [features, setFeatures] = useState<string[]>([]);
@@ -74,6 +76,8 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
       category: formData.category,
       description: formData.description,
       price: Number(formData.price),
+      discount: Number(formData.discount),
+      gender: formData.gender,
       image: formData.image,
       features
     };
@@ -86,6 +90,8 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
       category: 'Bags',
       description: '',
       price: '',
+      discount: '',
+      gender: 'all',
       image: ''
     });
     setFeatures([]);
@@ -156,6 +162,37 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
               placeholder="Enter price"
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="discount">Discount (%)</Label>
+            <Input
+              id="discount"
+              type="number"
+              value={formData.discount}
+              onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
+              placeholder="Enter discount"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gender">Gender</Label>
+            <Select
+              value={formData.gender}
+              onValueChange={(value: 'men' | 'women' | 'all') =>
+                setFormData({ ...formData, gender: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="men">Men</SelectItem>
+                <SelectItem value="women">Women</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

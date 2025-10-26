@@ -1,5 +1,5 @@
-import React from "react"
 import { useState } from 'react';
+import React from 'react';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -16,7 +16,7 @@ interface ChangeStatusFormProps {
 
 export function ChangeStatusForm({ orders, onUpdateStatus }: ChangeStatusFormProps) {
   const [orderId, setOrderId] = useState('');
-  const [newStatus, setNewStatus] = useState<Order['status']>('pending');
+  const [newStatus, setNewStatus] = useState<Order['status']>('processing');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +32,7 @@ export function ChangeStatusForm({ orders, onUpdateStatus }: ChangeStatusFormPro
     toast.success(`Order ${orderId.toUpperCase()} status updated to ${newStatus}!`);
     
     setOrderId('');
-    setNewStatus('pending');
+    setNewStatus('processing');
   };
 
   return (
@@ -67,10 +67,10 @@ export function ChangeStatusForm({ orders, onUpdateStatus }: ChangeStatusFormPro
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="processing">Processing</SelectItem>
                 <SelectItem value="shipping">Shipping</SelectItem>
                 <SelectItem value="delivered">Delivered</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
           </div>

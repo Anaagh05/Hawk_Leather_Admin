@@ -1,18 +1,12 @@
-import React from "react";
-import { useState } from "react";
-import { Order } from "../types";
-import { Card } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "./ui/pagination";
-import { motion } from "motion/react";
+import { useState } from 'react';
+import { Order } from '../types';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from './ui/pagination';
+import { motion } from 'motion/react';
+import React from 'react';
+
 
 interface OrdersViewProps {
   orders: Order[];
@@ -22,27 +16,27 @@ const ITEMS_PER_PAGE = 4;
 
 export function OrdersView({ orders }: OrdersViewProps) {
   const [currentPages, setCurrentPages] = useState({
-    pending: 1,
     processing: 1,
     shipping: 1,
     delivered: 1,
+    cancelled: 1
   });
 
-  const getStatusBadgeVariant = (status: Order["status"]) => {
+  const getStatusBadgeVariant = (status: Order['status']) => {
     switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "processing":
-        return "bg-blue-100 text-blue-800";
-      case "shipping":
-        return "bg-purple-100 text-purple-800";
-      case "delivered":
-        return "bg-green-100 text-green-800";
+      case 'processing':
+        return 'bg-blue-100 text-blue-800';
+      case 'shipping':
+        return 'bg-purple-100 text-purple-800';
+      case 'delivered':
+        return 'bg-green-100 text-green-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
     }
   };
 
-  const filterOrdersByStatus = (status: Order["status"]) => {
-    return orders.filter((order) => order.status === status);
+  const filterOrdersByStatus = (status: Order['status']) => {
+    return orders.filter(order => order.status === status);
   };
 
   const paginateOrders = (orders: Order[], page: number) => {
@@ -55,7 +49,7 @@ export function OrdersView({ orders }: OrdersViewProps) {
     return Math.ceil(totalItems / ITEMS_PER_PAGE);
   };
 
-  const renderOrderList = (status: Order["status"]) => {
+  const renderOrderList = (status: Order['status']) => {
     const filteredOrders = filterOrdersByStatus(status);
     const currentPage = currentPages[status];
     const paginatedOrders = paginateOrders(filteredOrders, currentPage);
@@ -82,9 +76,7 @@ export function OrdersView({ orders }: OrdersViewProps) {
                       <div className="space-y-1">
                         <p className="text-amber-900">Order #{order.id}</p>
                         <p className="text-gray-600">{order.itemName}</p>
-                        <p className="text-sm text-gray-500">
-                          Customer: {order.customerName}
-                        </p>
+                        <p className="text-sm text-gray-500">Customer: {order.customerName}</p>
                       </div>
                       <div className="text-right space-y-2">
                         <Badge className={getStatusBadgeVariant(order.status)}>
@@ -106,52 +98,31 @@ export function OrdersView({ orders }: OrdersViewProps) {
                     <PaginationPrevious
                       onClick={() => {
                         if (currentPage > 1) {
-                          setCurrentPages({
-                            ...currentPages,
-                            [status]: currentPage - 1,
-                          });
+                          setCurrentPages({ ...currentPages, [status]: currentPage - 1 });
                         }
                       }}
-                      className={
-                        currentPage === 1
-                          ? "pointer-events-none opacity-50"
-                          : "cursor-pointer"
-                      }
-                      size="default"
+                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                     />
                   </PaginationItem>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          onClick={() =>
-                            setCurrentPages({ ...currentPages, [status]: page })
-                          }
-                          isActive={currentPage === page}
-                          className="cursor-pointer"
-                          size="icon"
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    )
-                  )}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrentPages({ ...currentPages, [status]: page })}
+                        isActive={currentPage === page}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => {
                         if (currentPage < totalPages) {
-                          setCurrentPages({
-                            ...currentPages,
-                            [status]: currentPage + 1,
-                          });
+                          setCurrentPages({ ...currentPages, [status]: currentPage + 1 });
                         }
                       }}
-                      className={
-                        currentPage === totalPages
-                          ? "pointer-events-none opacity-50"
-                          : "cursor-pointer"
-                      }
-                      size="default"
+                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -171,28 +142,28 @@ export function OrdersView({ orders }: OrdersViewProps) {
     >
       <h2 className="mb-6 text-amber-900">Order Management</h2>
 
-      <Tabs defaultValue="pending" className="w-full">
+      <Tabs defaultValue="processing" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="pending">Pending</TabsTrigger>
           <TabsTrigger value="processing">Processing</TabsTrigger>
           <TabsTrigger value="shipping">Shipping</TabsTrigger>
           <TabsTrigger value="delivered">Delivered</TabsTrigger>
+          <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pending" className="mt-6">
-          {renderOrderList("pending")}
-        </TabsContent>
-
         <TabsContent value="processing" className="mt-6">
-          {renderOrderList("processing")}
+          {renderOrderList('processing')}
         </TabsContent>
 
         <TabsContent value="shipping" className="mt-6">
-          {renderOrderList("shipping")}
+          {renderOrderList('shipping')}
         </TabsContent>
 
         <TabsContent value="delivered" className="mt-6">
-          {renderOrderList("delivered")}
+          {renderOrderList('delivered')}
+        </TabsContent>
+
+        <TabsContent value="cancelled" className="mt-6">
+          {renderOrderList('cancelled')}
         </TabsContent>
       </Tabs>
     </motion.div>

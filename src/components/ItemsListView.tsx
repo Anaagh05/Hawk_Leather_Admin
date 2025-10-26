@@ -1,16 +1,9 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { Item } from "../types";
-import { ItemCard } from "./ItemCard";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "./ui/pagination";
-import { motion } from "motion/react";
+import { useState, useEffect } from 'react';
+import { Item } from '../types';
+import { ItemCard } from './ItemCard';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from './ui/pagination';
+import { motion } from 'motion/react';
+import React from 'react';
 
 interface ItemsListViewProps {
   items: Item[];
@@ -18,7 +11,7 @@ interface ItemsListViewProps {
   onDelete: (id: string) => void;
 }
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 6;
 
 export function ItemsListView({ items, onEdit, onDelete }: ItemsListViewProps) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,28 +63,20 @@ export function ItemsListView({ items, onEdit, onDelete }: ItemsListViewProps) {
                         setCurrentPage(currentPage - 1);
                       }
                     }}
-                    className={
-                      currentPage === 1
-                        ? "pointer-events-none opacity-50"
-                        : "cursor-pointer"
-                    }
-                    size="default"
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                   />
                 </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <PaginationItem key={page}>
-                      <PaginationLink
-                        onClick={() => setCurrentPage(page)}
-                        isActive={currentPage === page}
-                        className="cursor-pointer"
-                        size="icon"
-                      >
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                )}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(page)}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
                 <PaginationItem>
                   <PaginationNext
                     onClick={() => {
@@ -99,12 +84,7 @@ export function ItemsListView({ items, onEdit, onDelete }: ItemsListViewProps) {
                         setCurrentPage(currentPage + 1);
                       }
                     }}
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : "cursor-pointer"
-                    }
-                    size="default"
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                   />
                 </PaginationItem>
               </PaginationContent>
