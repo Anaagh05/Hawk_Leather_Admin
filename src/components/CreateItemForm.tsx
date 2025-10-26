@@ -22,7 +22,7 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
     description: '',
     price: '',
     discount: '',
-    gender: 'all' as 'men' | 'women' | 'all',
+    gender: 'unisex' as 'men' | 'women' | 'unisex',
     image: ''
   });
   const [features, setFeatures] = useState<string[]>([]);
@@ -91,7 +91,7 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
       description: '',
       price: '',
       discount: '',
-      gender: 'all',
+      gender: 'unisex',
       image: ''
     });
     setFeatures([]);
@@ -180,7 +180,7 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
             <Label htmlFor="gender">Gender</Label>
             <Select
               value={formData.gender}
-              onValueChange={(value: 'men' | 'women' | 'all') =>
+              onValueChange={(value: 'men' | 'women' | 'unisex') =>
                 setFormData({ ...formData, gender: value })
               }
             >
@@ -190,7 +190,7 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
               <SelectContent>
                 <SelectItem value="men">Men</SelectItem>
                 <SelectItem value="women">Women</SelectItem>
-                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="unisex">Unisex</SelectItem>
               </SelectContent>
             </Select>
           </div>

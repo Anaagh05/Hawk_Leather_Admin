@@ -6,7 +6,7 @@ export interface Item {
   features: string[];
   price: number;
   discount: number;
-  gender: 'men' | 'women' | 'all';
+  gender: 'men' | 'women' | 'unisex';
   image: string;
 }
 
