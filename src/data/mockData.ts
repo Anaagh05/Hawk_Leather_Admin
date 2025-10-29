@@ -31,7 +31,7 @@ export const mockItems: Item[] = [
     features: ['Distressed Leather', 'Cross-body Strap', 'Quick Access Pocket', 'Classic Design'],
     price: 3800,
     discount: 5,
-    gender: 'all',
+    gender: 'men',
     image: 'https://images.unsplash.com/photo-1650542218150-5e59a58d4312?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwYmFnJTIwYnJvd258ZW58MXx8fHwxNzYwMjU3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -64,7 +64,7 @@ export const mockItems: Item[] = [
     features: ['Genuine Leather', 'Reversible', 'Adjustable', 'Metal Buckle'],
     price: 800,
     discount: 10,
-    gender: 'all',
+    gender: 'women',
     image: 'https://images.unsplash.com/photo-1684510334550-0c4fa8aaffd1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwYmVsdCUyMGFjY2Vzc29yaWVzfGVufDF8fHx8MTc2MDM0NDY2M3ww&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {
@@ -86,7 +86,7 @@ export const mockItems: Item[] = [
     features: ['Large Capacity', 'Padded Straps', 'Laptop Sleeve', 'Water Resistant'],
     price: 5200,
     discount: 12,
-    gender: 'all',
+    gender: 'unisex',
     image: 'https://images.unsplash.com/photo-1650542218150-5e59a58d4312?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZWF0aGVyJTIwYmFnJTIwYnJvd258ZW58MXx8fHwxNzYwMjU3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080'
   },
   {

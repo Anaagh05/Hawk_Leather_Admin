@@ -2,8 +2,8 @@ import React from 'react';
 import { useState } from 'react';
 import { LoginForm } from './components/LoginForm';
 import { AdminPanel } from './components/AdminPanel';
-import { mockItems, mockOrders } from './data/mockData';
-import { Item, Order } from './types';
+import { ProductProvider } from './context/ProductContext';
+import { OrderProvider } from './context/OrderContext';
 import { Toaster } from './components/ui/sonner';
 
 export default function App() {
@@ -16,9 +16,6 @@ export default function App() {
     }
     return false;
   });
-  
-  const [items, setItems] = useState<Item[]>(mockItems);
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -30,7 +27,6 @@ export default function App() {
     setIsLoggedIn(false);
     // Remove login state from localStorage
     localStorage.removeItem('isLoggedIn');
-    // Optional: Clear any other sensitive data from localStorage
   };
 
   return (
@@ -38,13 +34,11 @@ export default function App() {
       {!isLoggedIn ? (
         <LoginForm onLogin={handleLogin} />
       ) : (
-        <AdminPanel
-          items={items}
-          orders={orders}
-          onLogout={handleLogout}
-          onUpdateItems={setItems}
-          onUpdateOrders={setOrders}
-        />
+        <ProductProvider>
+          <OrderProvider>
+            <AdminPanel onLogout={handleLogout} />
+          </OrderProvider>
+        </ProductProvider>
       )}
       <Toaster />
     </>

@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react';
 import { Item } from '../types';
 import { ItemCard } from './ItemCard';
+import { EditItemDialog } from './EditItemDialog';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from './ui/pagination';
 import { motion } from 'motion/react';
 import React from 'react';
+import { useProducts } from '../context/ProductContext';
+import { Loader2 } from 'lucide-react';
 
 interface ItemsListViewProps {
   items: Item[];
-  onEdit: (item: Item) => void;
-  onDelete: (id: string) => void;
 }
 
 const ITEMS_PER_PAGE = 6;
 
-export function ItemsListView({ items, onEdit, onDelete }: ItemsListViewProps) {
+export function ItemsListView({ items }: ItemsListViewProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  
+  const { loading, deleteProduct } = useProducts();
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -27,6 +32,25 @@ export function ItemsListView({ items, onEdit, onDelete }: ItemsListViewProps) {
       setCurrentPage(1);
     }
   }, [items.length, currentPage, totalPages]);
+
+  const handleEditItem = (item: Item) => {
+    setEditingItem(item);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDeleteItem = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      await deleteProduct(id);
+    }
+  };
+
+  if (loading && items.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-700" />
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -46,8 +70,8 @@ export function ItemsListView({ items, onEdit, onDelete }: ItemsListViewProps) {
               <ItemCard
                 key={item.id}
                 item={item}
-                onEdit={onEdit}
-                onDelete={onDelete}
+                onEdit={handleEditItem}
+                onDelete={handleDeleteItem}
                 index={index}
               />
             ))}
@@ -92,6 +116,16 @@ export function ItemsListView({ items, onEdit, onDelete }: ItemsListViewProps) {
           )}
         </>
       )}
+
+      {/* Edit Dialog */}
+      <EditItemDialog
+        item={editingItem}
+        open={isEditDialogOpen}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setEditingItem(null);
+        }}
+      />
     </motion.div>
   );
 }

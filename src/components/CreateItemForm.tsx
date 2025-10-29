@@ -6,16 +6,14 @@ import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card } from './ui/card';
-import { Item } from '../types';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
+import { useProducts } from '../context/ProductContext';
 
-interface CreateItemFormProps {
-  onCreateItem: (item: Omit<Item, 'id'>) => void;
-}
-
-export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
+export function CreateItemForm() {
+  const { createProduct, loading } = useProducts();
+  
   const [formData, setFormData] = useState({
     name: '',
     category: 'Bags' as 'Bags' | 'Purses' | 'Belts',
@@ -23,11 +21,11 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
     price: '',
     discount: '',
     gender: 'unisex' as 'men' | 'women' | 'unisex',
-    image: ''
   });
   const [features, setFeatures] = useState<string[]>([]);
   const [featureInput, setFeatureInput] = useState('');
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleAddFeature = () => {
     if (featureInput.trim()) {
@@ -48,17 +46,17 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
         return;
       }
       
+      setImageFile(file);
+      
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setFormData({ ...formData, image: base64String });
-        setImagePreview(base64String);
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (features.length === 0) {
@@ -66,39 +64,44 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
       return;
     }
 
-    if (!formData.image) {
+    if (!imageFile) {
       toast.error('Please upload an image');
       return;
     }
 
-    const newItem: Omit<Item, 'id'> = {
-      name: formData.name,
-      category: formData.category,
-      description: formData.description,
-      price: Number(formData.price),
-      discount: Number(formData.discount),
-      gender: formData.gender,
-      image: formData.image,
-      features
-    };
+    try {
+      // Create FormData for multipart/form-data
+      const submitData = new FormData();
+      submitData.append('categoryName', formData.category);
+      submitData.append('itemName', formData.name);
+      submitData.append('itemPrice', formData.price);
+      submitData.append('itemDescription', formData.description);
+      submitData.append('itemFeatures', JSON.stringify(features));
+      submitData.append('discount', formData.discount);
+      
+      // Capitalize gender for backend
+      const capitalizedGender = formData.gender.charAt(0).toUpperCase() + formData.gender.slice(1);
+      submitData.append('gender', capitalizedGender);
+      submitData.append('itemImageUrl', imageFile);
 
-    onCreateItem(newItem);
-    
-    // Reset form
-    setFormData({
-      name: '',
-      category: 'Bags',
-      description: '',
-      price: '',
-      discount: '',
-      gender: 'unisex',
-      image: ''
-    });
-    setFeatures([]);
-    setFeatureInput('');
-    setImagePreview('');
-    
-    toast.success('Item created successfully!');
+      await createProduct(submitData);
+      
+      // Reset form
+      setFormData({
+        name: '',
+        category: 'Bags',
+        description: '',
+        price: '',
+        discount: '',
+        gender: 'unisex',
+      });
+      setFeatures([]);
+      setFeatureInput('');
+      setImagePreview('');
+      setImageFile(null);
+    } catch (error) {
+      console.error('Error creating product:', error);
+    }
   };
 
   return (
@@ -250,8 +253,12 @@ export function CreateItemForm({ onCreateItem }: CreateItemFormProps) {
             </div>
           </div>
 
-          <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-800">
-            Create Item
+          <Button 
+            type="submit" 
+            className="w-full bg-amber-700 hover:bg-amber-800"
+            disabled={loading}
+          >
+            {loading ? 'Creating...' : 'Create Item'}
           </Button>
         </form>
       </Card>

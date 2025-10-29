@@ -1,68 +1,28 @@
 import React from 'react';
 import { useState } from 'react';
-import { Item, Order } from '../types';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from './ui/sheet';
 import { ItemsListView } from './ItemsListView';
-import { EditItemDialog } from './EditItemDialog';
 import { CreateItemForm } from './CreateItemForm';
 import { OrdersView } from './OrdersView';
 import { ChangeStatusForm } from './ChangeStatusForm';
 import { Package, PlusCircle, ShoppingCart, Edit3, LogOut, Menu } from 'lucide-react';
 import { motion } from 'motion/react';
-import { toast } from 'sonner';
+import { useProducts } from '../context/ProductContext';
 
 interface AdminPanelProps {
-  items: Item[];
-  orders: Order[];
   onLogout: () => void;
-  onUpdateItems: (items: Item[]) => void;
-  onUpdateOrders: (orders: Order[]) => void;
 }
 
 type ViewType = 'Bags' | 'Purses' | 'Belts' | 'create' | 'orders' | 'changeStatus';
 
-export function AdminPanel({ items, orders, onLogout, onUpdateItems, onUpdateOrders }: AdminPanelProps) {
+export function AdminPanel({ onLogout }: AdminPanelProps) {
   const [activeView, setActiveView] = useState<ViewType>('Bags');
-  const [editingItem, setEditingItem] = useState<Item | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const handleEditItem = (item: Item) => {
-    setEditingItem(item);
-    setIsEditDialogOpen(true);
-  };
-
-  const handleSaveEdit = (updatedItem: Item) => {
-    const updatedItems = items.map(item => 
-      item.id === updatedItem.id ? updatedItem : item
-    );
-    onUpdateItems(updatedItems);
-  };
-
-  const handleDeleteItem = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      const updatedItems = items.filter(item => item.id !== id);
-      onUpdateItems(updatedItems);
-      toast.success('Item deleted successfully!');
-    }
-  };
-
-  const handleCreateItem = (newItemData: Omit<Item, 'id'>) => {
-    const newItem: Item = {
-      ...newItemData,
-      id: Date.now().toString()
-    };
-    onUpdateItems([...items, newItem]);
-  };
-
-  const handleUpdateOrderStatus = (orderId: string, newStatus: Order['status']) => {
-    const updatedOrders = orders.map(order =>
-      order.id === orderId ? { ...order, status: newStatus } : order
-    );
-    onUpdateOrders(updatedOrders);
-  };
+  
+  // Get products from context
+  const { items } = useProducts();
 
   const getFilteredItems = (category: 'Bags' | 'Purses' | 'Belts') => {
     return items.filter(item => item.category === category);
@@ -81,19 +41,15 @@ export function AdminPanel({ items, orders, onLogout, onUpdateItems, onUpdateOrd
         return (
           <div>
             <h2 className="mb-6 text-amber-900">{activeView}</h2>
-            <ItemsListView
-              items={getFilteredItems(activeView)}
-              onEdit={handleEditItem}
-              onDelete={handleDeleteItem}
-            />
+            <ItemsListView items={getFilteredItems(activeView)} />
           </div>
         );
       case 'create':
-        return <CreateItemForm onCreateItem={handleCreateItem} />;
+        return <CreateItemForm />;
       case 'orders':
-        return <OrdersView orders={orders} />;
+        return <OrdersView />;
       case 'changeStatus':
-        return <ChangeStatusForm orders={orders} onUpdateStatus={handleUpdateOrderStatus} />;
+        return <ChangeStatusForm />;
     }
   };
 
@@ -224,17 +180,6 @@ export function AdminPanel({ items, orders, onLogout, onUpdateItems, onUpdateOrd
           </div>
         </ScrollArea>
       </div>
-
-      {/* Edit Dialog */}
-      <EditItemDialog
-        item={editingItem}
-        open={isEditDialogOpen}
-        onClose={() => {
-          setIsEditDialogOpen(false);
-          setEditingItem(null);
-        }}
-        onSave={handleSaveEdit}
-      />
     </div>
   );
 }

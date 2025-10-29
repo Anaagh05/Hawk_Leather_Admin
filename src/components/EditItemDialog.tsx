@@ -9,23 +9,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Item } from '../types';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
+import { useProducts } from '../context/ProductContext';
 
 interface EditItemDialogProps {
   item: Item | null;
   open: boolean;
   onClose: () => void;
-  onSave: (item: Item) => void;
 }
 
-export function EditItemDialog({ item, open, onClose, onSave }: EditItemDialogProps) {
+export function EditItemDialog({ item, open, onClose }: EditItemDialogProps) {
+  const { updateProduct, loading } = useProducts();
   const [formData, setFormData] = useState<Item | null>(null);
   const [featureInput, setFeatureInput] = useState('');
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (item) {
       setFormData(item);
       setImagePreview(item.image);
+      setImageFile(null);
     }
   }, [item]);
 
@@ -56,22 +59,43 @@ export function EditItemDialog({ item, open, onClose, onSave }: EditItemDialogPr
         return;
       }
       
+      setImageFile(file);
+      
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setFormData({ ...formData, image: base64String });
-        setImagePreview(base64String);
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData) {
-      onSave(formData);
-      toast.success('Item updated successfully!');
+    if (!formData) return;
+
+    try {
+      // Create FormData for multipart/form-data
+      const submitData = new FormData();
+      submitData.append('categoryName', formData.category);
+      submitData.append('itemName', formData.name);
+      submitData.append('itemPrice', formData.price.toString());
+      submitData.append('itemDescription', formData.description);
+      submitData.append('itemFeatures', JSON.stringify(formData.features));
+      submitData.append('discount', formData.discount.toString());
+      
+      // Capitalize gender for backend
+      const capitalizedGender = formData.gender.charAt(0).toUpperCase() + formData.gender.slice(1);
+      submitData.append('gender', capitalizedGender);
+
+      // Only add image if a new one was uploaded
+      if (imageFile) {
+        submitData.append('itemImageUrl', imageFile);
+      }
+
+      await updateProduct(formData.id, submitData);
       onClose();
+    } catch (error) {
+      console.error('Error updating product:', error);
     }
   };
 
@@ -153,7 +177,7 @@ export function EditItemDialog({ item, open, onClose, onSave }: EditItemDialogPr
             <Label htmlFor="gender">Gender</Label>
             <Select
               value={formData.gender}
-              onValueChange={(value: 'men' | 'women' | 'all') =>
+              onValueChange={(value: 'men' | 'women' | 'unisex') =>
                 setFormData({ ...formData, gender: value })
               }
             >
@@ -163,7 +187,7 @@ export function EditItemDialog({ item, open, onClose, onSave }: EditItemDialogPr
               <SelectContent>
                 <SelectItem value="men">Men</SelectItem>
                 <SelectItem value="women">Women</SelectItem>
-                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="unisex">Unisex</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -224,10 +248,14 @@ export function EditItemDialog({ item, open, onClose, onSave }: EditItemDialogPr
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button type="submit" className="flex-1 bg-amber-700 hover:bg-amber-800">
-              Save Changes
+            <Button 
+              type="submit" 
+              className="flex-1 bg-amber-700 hover:bg-amber-800"
+              disabled={loading}
+            >
+              {loading ? 'Saving...' : 'Save Changes'}
             </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
               Cancel
             </Button>
           </div>
