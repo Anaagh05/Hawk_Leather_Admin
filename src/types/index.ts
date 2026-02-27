@@ -10,6 +10,15 @@ export interface Item {
   image: string;
 }
 
+// Leather product used in the Leather section
+export interface LeatherItem {
+  id: string;
+  title: string;
+  image: string;
+  description: string;
+  features: string[];
+}
+
 // Enhanced Order interfaces with complete backend data
 export interface ShippingAddress {
   street: string;

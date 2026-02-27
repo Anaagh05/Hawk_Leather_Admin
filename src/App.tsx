@@ -4,6 +4,7 @@ import { LoginForm } from './components/LoginForm';
 import { AdminPanel } from './components/AdminPanel';
 import { ProductProvider } from './context/ProductContext';
 import { OrderProvider } from './context/OrderContext';
+import { LeatherProvider } from './context/LeatherContext';
 import { Toaster } from './components/ui/sonner';
 
 export default function App() {
@@ -36,7 +37,9 @@ export default function App() {
       ) : (
         <ProductProvider>
           <OrderProvider>
-            <AdminPanel onLogout={handleLogout} />
+            <LeatherProvider>
+              <AdminPanel onLogout={handleLogout} />
+            </LeatherProvider>
           </OrderProvider>
         </ProductProvider>
       )}

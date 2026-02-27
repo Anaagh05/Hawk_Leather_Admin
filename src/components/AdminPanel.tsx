@@ -10,12 +10,14 @@ import { ChangeStatusForm } from './ChangeStatusForm';
 import { Package, PlusCircle, ShoppingCart, Edit3, LogOut, Menu } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useProducts } from '../context/ProductContext';
+import { LeatherListView } from './LeatherListView';
+import { CreateLeatherItemForm } from './CreateLeatherItemForm';
 
 interface AdminPanelProps {
   onLogout: () => void;
 }
 
-type ViewType = 'Bags' | 'Purses' | 'Belts' | 'create' | 'orders' | 'changeStatus';
+type ViewType = 'Bags' | 'Purses' | 'Belts' | 'Leather' | 'createLeather' | 'create' | 'orders' | 'changeStatus';
 
 export function AdminPanel({ onLogout }: AdminPanelProps) {
   const [activeView, setActiveView] = useState<ViewType>('Bags');
@@ -44,6 +46,15 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
             <ItemsListView items={getFilteredItems(activeView)} />
           </div>
         );
+      case 'Leather':
+        return (
+          <div>
+            <h2 className="mb-6 text-amber-900">Leather</h2>
+            <LeatherListView />
+          </div>
+        );
+      case 'createLeather':
+        return <CreateLeatherItemForm />;
       case 'create':
         return <CreateItemForm />;
       case 'orders':
@@ -91,9 +102,27 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
             Belts
           </Button>
 
+          <Button
+            variant={activeView === 'Leather' ? 'default' : 'ghost'}
+            className={`w-full justify-start ${activeView === 'Leather' ? 'bg-amber-700 hover:bg-amber-800' : ''}`}
+            onClick={() => handleViewChange('Leather')}
+          >
+            <Package className="w-4 h-4 mr-2" />
+            Leather
+          </Button>
+
           <div className="pt-4">
             <p className="text-xs uppercase text-gray-500 px-3 py-2">Actions</p>
             
+            <Button
+              variant={activeView === 'createLeather' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${activeView === 'createLeather' ? 'bg-amber-700 hover:bg-amber-800' : ''}`}
+              onClick={() => handleViewChange('createLeather')}
+            >
+              <PlusCircle className="w-4 h-4 mr-2" />
+              Create Leather Item
+            </Button>
+
             <Button
               variant={activeView === 'create' ? 'default' : 'ghost'}
               className={`w-full justify-start ${activeView === 'create' ? 'bg-amber-700 hover:bg-amber-800' : ''}`}
