@@ -8,12 +8,22 @@ import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { useLeather } from '../context/LeatherContext';
+import { LeatherCategory } from '../types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+
+const LEATHER_CATEGORIES: { value: LeatherCategory; label: string }[] = [
+  { value: 'shoe_upper', label: 'Shoe Upper' },
+  { value: 'sports_leather', label: 'Sports Leather' },
+  { value: 'upholestry', label: 'Upholestry' },
+  { value: 'garment_and_goods', label: 'Garment & Goods' },
+];
 
 export function CreateLeatherItemForm() {
   const { createLeather, loading } = useLeather();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<LeatherCategory>('shoe_upper');
   const [features, setFeatures] = useState<string[]>([]);
   const [featureInput, setFeatureInput] = useState('');
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -75,6 +85,7 @@ export function CreateLeatherItemForm() {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
+      formData.append('category', category);
       formData.append('features', JSON.stringify(features));
       formData.append('itemImageUrl', imageFile);
 
@@ -83,6 +94,7 @@ export function CreateLeatherItemForm() {
       // Reset form on success
       setTitle('');
       setDescription('');
+      setCategory('shoe_upper');
       setFeatures([]);
       setFeatureInput('');
       setImagePreview('');
@@ -111,6 +123,22 @@ export function CreateLeatherItemForm() {
               placeholder="Enter leather title"
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Category</Label>
+            <Select value={category} onValueChange={(v: LeatherCategory) => setCategory(v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {LEATHER_CATEGORIES.map(c => (
+                  <SelectItem key={c.value} value={c.value}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

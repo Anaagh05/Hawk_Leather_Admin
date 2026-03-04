@@ -11,12 +11,19 @@ export interface Item {
 }
 
 // Leather product used in the Leather section
+export type LeatherCategory =
+  | 'shoe_upper'
+  | 'sports_leather'
+  | 'upholestry'
+  | 'garment_and_goods';
+
 export interface LeatherItem {
   id: string;
   title: string;
   image: string;
   description: string;
   features: string[];
+  category?: LeatherCategory;
 }
 
 // Enhanced Order interfaces with complete backend data

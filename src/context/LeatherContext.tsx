@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { LeatherItem } from '../types';
+import { LeatherCategory, LeatherItem } from '../types';
 import { leatherService } from '../services/leatherService';
 import { toast } from 'sonner';
 
@@ -7,7 +7,8 @@ interface LeatherContextType {
   items: LeatherItem[];
   loading: boolean;
   error: string | null;
-  fetchLeather: () => Promise<void>;
+  activeCategory: LeatherCategory;
+  fetchLeather: (category?: LeatherCategory) => Promise<void>;
   createLeather: (data: FormData) => Promise<void>;
   updateLeather: (id: string, data: FormData) => Promise<void>;
   deleteLeather: (id: string) => Promise<void>;
@@ -19,16 +20,20 @@ export const LeatherProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [items, setItems] = useState<LeatherItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<LeatherCategory>('shoe_upper');
 
   useEffect(() => {
-    fetchLeather();
+    fetchLeather('shoe_upper');
   }, []);
 
-  const fetchLeather = async () => {
+  const fetchLeather = async (category?: LeatherCategory) => {
+    const selectedCategory = category ?? activeCategory;
     try {
       setLoading(true);
       setError(null);
-      const data = await leatherService.getAllLeather();
+      setActiveCategory(selectedCategory);
+      setItems([]);
+      const data = await leatherService.getAllLeather(selectedCategory);
       setItems(data);
     } catch (err: any) {
       const message = err.message || 'Failed to fetch leather products';
@@ -44,7 +49,10 @@ export const LeatherProvider: React.FC<{ children: ReactNode }> = ({ children })
       setLoading(true);
       setError(null);
       const created = await leatherService.createLeather(data);
-      setItems(prev => [...prev, created]);
+      setItems(prev => {
+        if (created.category && created.category !== activeCategory) return prev;
+        return [...prev, created];
+      });
       toast.success('Leather product created successfully!');
     } catch (err: any) {
       const message = err.message || 'Failed to create leather product';
@@ -61,7 +69,12 @@ export const LeatherProvider: React.FC<{ children: ReactNode }> = ({ children })
       setLoading(true);
       setError(null);
       const updated = await leatherService.updateLeather(id, data);
-      setItems(prev => prev.map(item => (item.id === id ? updated : item)));
+      setItems(prev => {
+        if (updated.category && updated.category !== activeCategory) {
+          return prev.filter(item => item.id !== id);
+        }
+        return prev.map(item => (item.id === id ? updated : item));
+      });
       toast.success('Leather product updated successfully!');
     } catch (err: any) {
       const message = err.message || 'Failed to update leather product';
@@ -96,6 +109,7 @@ export const LeatherProvider: React.FC<{ children: ReactNode }> = ({ children })
         items,
         loading,
         error,
+        activeCategory,
         fetchLeather,
         createLeather,
         updateLeather,

@@ -2,21 +2,53 @@ import React, { useEffect, useState } from 'react';
 import { LeatherCard } from './LeatherCard';
 import { useLeather } from '../context/LeatherContext';
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { LeatherItem } from '../types';
+import { LeatherCategory, LeatherItem } from '../types';
 import { EditLeatherDialog } from './EditLeatherDialog';
 import { motion } from 'motion/react';
 
 const ITEMS_PER_PAGE = 6;
+const LEATHER_CATEGORIES: { value: LeatherCategory; label: string }[] = [
+  { value: 'shoe_upper', label: 'Shoe Upper' },
+  { value: 'sports_leather', label: 'Sports Leather' },
+  { value: 'upholestry', label: 'Upholestry' },
+  { value: 'garment_and_goods', label: 'Garment & Goods' },
+];
 
 export function LeatherListView() {
-  const { items, loading, deleteLeather } = useLeather();
+  const { items, loading, deleteLeather, fetchLeather, activeCategory } = useLeather();
   const [currentPage, setCurrentPage] = useState(1);
   const [editingItem, setEditingItem] = useState<LeatherItem | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [columns, setColumns] = useState(3);
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    // Always default to shoe_upper when opening Leather from sidebar
+    fetchLeather('shoe_upper');
+    setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const updateColumns = () => {
+      if (typeof window === 'undefined') return;
+      const width = window.innerWidth;
+      if (width < 640) {
+        setColumns(1);
+      } else if (width < 1024) {
+        setColumns(2);
+      } else {
+        setColumns(3);
+      }
+    };
+
+    updateColumns();
+    window.addEventListener('resize', updateColumns);
+    return () => window.removeEventListener('resize', updateColumns);
+  }, []);
 
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
@@ -35,24 +67,6 @@ export function LeatherListView() {
     }
   };
 
-  if (loading && items.length === 0) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '48px 0',
-        }}
-      >
-        <Loader2
-          size={32}
-          style={{ color: '#b45309', animation: 'spin 1s linear infinite' }}
-        />
-      </div>
-    );
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -60,7 +74,75 @@ export function LeatherListView() {
       transition={{ duration: 0.45 }}
       style={{ width: '100%' }}
     >
-      {currentItems.length === 0 ? (
+      <div
+        style={{
+          maxWidth: '1120px',
+          margin: '0 auto',
+          width: '100%',
+        }}
+      >
+        {/* Category switch navbar */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '8px',
+            padding: '6px',
+            borderRadius: '999px',
+            background: '#f3f4f6',
+            border: '1px solid #e5e7eb',
+            margin: '10px 18px',
+            flexWrap: 'wrap',
+            width:"55%",
+            justifyContent: 'start',
+          }}
+        >
+          {LEATHER_CATEGORIES.map(cat => {
+            const active = cat.value === activeCategory;
+            return (
+              <button
+                key={cat.value}
+                onClick={() => {
+                  if (cat.value === activeCategory) return;
+                  setCurrentPage(1);
+                  fetchLeather(cat.value);
+                }}
+                type="button"
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '999px',
+                  border: active ? '1px solid #b45309' : '1px solid transparent',
+                  background: active ? '#b45309' : 'transparent',
+                  color: active ? '#ffffff' : '#374151',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.18s ease, border-color 0.18s ease',
+                  fontFamily: 'inherit',
+                  minWidth: '140px',
+                  textAlign: 'center',
+                }}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {loading && items.length === 0 ? (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '48px 0',
+          }}
+        >
+          <Loader2
+            size={32}
+            style={{ color: '#b45309', animation: 'spin 1s linear infinite' }}
+          />
+        </div>
+        ) : currentItems.length === 0 ? (
         <div
           style={{
             textAlign: 'center',
@@ -71,7 +153,7 @@ export function LeatherListView() {
         >
           No leather products found
         </div>
-      ) : (
+        ) : (
         <>
           {/*
             ─────────────────────────────────────────────
@@ -82,7 +164,7 @@ export function LeatherListView() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
+              gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
               gap: '24px',
               width: '100%',
               boxSizing: 'border-box',
@@ -147,6 +229,7 @@ export function LeatherListView() {
           )}
         </>
       )}
+      </div>
 
       <EditLeatherDialog
         item={editingItem}

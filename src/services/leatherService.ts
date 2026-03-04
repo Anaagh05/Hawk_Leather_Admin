@@ -1,4 +1,4 @@
-import { LeatherItem } from '../types';
+import { LeatherCategory, LeatherItem } from '../types';
 
 // @ts-expect-error: VITE_API_BASE_URL is provided by Vite at build time
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -11,13 +11,20 @@ const transformBackendLeather = (backendLeather: any): LeatherItem => {
     image: backendLeather.image,
     description: backendLeather.description,
     features: backendLeather.features ?? [],
+    category:
+      (backendLeather.category ??
+        backendLeather.leatherCategory ??
+        backendLeather.leather_category) as LeatherCategory | undefined,
   };
 };
 
 export const leatherService = {
   // Get all leather products
-  getAllLeather: async (): Promise<LeatherItem[]> => {
-    const response = await fetch(`${API_BASE_URL}/leather/all`, {
+  getAllLeather: async (category?: LeatherCategory): Promise<LeatherItem[]> => {
+    const url = new URL(`${API_BASE_URL}/leather/all`);
+    if (category) url.searchParams.set('category', category);
+
+    const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
         Accept: 'application/json',

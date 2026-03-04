@@ -5,9 +5,17 @@ import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { X } from 'lucide-react';
-import { LeatherItem } from '../types';
+import { LeatherCategory, LeatherItem } from '../types';
 import { useLeather } from '../context/LeatherContext';
 import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+
+const LEATHER_CATEGORIES: { value: LeatherCategory; label: string }[] = [
+  { value: 'shoe_upper', label: 'Shoe Upper' },
+  { value: 'sports_leather', label: 'Sports Leather' },
+  { value: 'upholestry', label: 'Upholestry' },
+  { value: 'garment_and_goods', label: 'Garment & Goods' },
+];
 
 interface EditLeatherDialogProps {
   item: LeatherItem | null;
@@ -24,7 +32,7 @@ export function EditLeatherDialog({ item, open, onClose }: EditLeatherDialogProp
 
   useEffect(() => {
     if (item) {
-      setFormData(item);
+      setFormData({ ...item, category: item.category ?? 'shoe_upper' });
       setImagePreview(item.image);
       setImageFile(null);
       setFeatureInput('');
@@ -86,6 +94,9 @@ export function EditLeatherDialog({ item, open, onClose }: EditLeatherDialogProp
         if (JSON.stringify(formData.features) !== JSON.stringify(item.features)) {
           submitData.append('features', JSON.stringify(formData.features));
         }
+        if ((formData.category ?? 'shoe_upper') !== (item.category ?? 'shoe_upper')) {
+          submitData.append('category', formData.category ?? 'shoe_upper');
+        }
       }
 
       if (imageFile) {
@@ -125,6 +136,27 @@ export function EditLeatherDialog({ item, open, onClose }: EditLeatherDialogProp
               onChange={e => setFormData({ ...formData, title: e.target.value })}
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Category</Label>
+            <Select
+              value={(formData.category ?? 'shoe_upper') as LeatherCategory}
+              onValueChange={(value: LeatherCategory) =>
+                setFormData({ ...formData, category: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {LEATHER_CATEGORIES.map(c => (
+                  <SelectItem key={c.value} value={c.value}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
