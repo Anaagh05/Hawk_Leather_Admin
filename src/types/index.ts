@@ -15,7 +15,8 @@ export type LeatherCategory =
   | 'shoe_upper'
   | 'sports_leather'
   | 'upholestry'
-  | 'garment_and_goods';
+  | 'garment_and_goods'
+  | (string & {});
 
 export interface LeatherItem {
   id: string;

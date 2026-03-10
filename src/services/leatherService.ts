@@ -104,5 +104,27 @@ export const leatherService = {
       throw new Error(result.message || 'Failed to delete leather product');
     }
   },
+
+  // Get all unique leather categories
+  getUniqueCategories: async (): Promise<string[]> => {
+    const response = await fetch(`${API_BASE_URL}/leather/unique`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to fetch leather categories');
+    }
+
+    return Array.isArray(result.data) ? result.data : [];
+  },
 };
 

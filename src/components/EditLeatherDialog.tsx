@@ -9,12 +9,13 @@ import { LeatherCategory, LeatherItem } from '../types';
 import { useLeather } from '../context/LeatherContext';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { leatherService } from '../services/leatherService';
 
-const LEATHER_CATEGORIES: { value: LeatherCategory; label: string }[] = [
-  { value: 'shoe_upper', label: 'Shoe Upper' },
-  { value: 'sports_leather', label: 'Sports Leather' },
-  { value: 'upholestry', label: 'Upholestry' },
-  { value: 'garment_and_goods', label: 'Garment & Goods' },
+const FALLBACK_CATEGORIES: LeatherCategory[] = [
+  'shoe_upper',
+  'sports_leather',
+  'upholestry',
+  'garment_and_goods',
 ];
 
 interface EditLeatherDialogProps {
@@ -29,6 +30,8 @@ export function EditLeatherDialog({ item, open, onClose }: EditLeatherDialogProp
   const [featureInput, setFeatureInput] = useState('');
   const [imagePreview, setImagePreview] = useState<string>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [categories, setCategories] = useState<LeatherCategory[]>(FALLBACK_CATEGORIES);
+  const [categoryLoading, setCategoryLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (item) {
@@ -38,6 +41,23 @@ export function EditLeatherDialog({ item, open, onClose }: EditLeatherDialogProp
       setFeatureInput('');
     }
   }, [item]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoryLoading(true);
+        const unique = await leatherService.getUniqueCategories();
+        const normalized = (unique ?? []).filter(Boolean) as LeatherCategory[];
+        setCategories(normalized.length ? normalized : FALLBACK_CATEGORIES);
+      } catch {
+        setCategories(FALLBACK_CATEGORIES);
+      } finally {
+        setCategoryLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleAddFeature = () => {
     if (featureInput.trim() && formData) {
@@ -145,14 +165,15 @@ export function EditLeatherDialog({ item, open, onClose }: EditLeatherDialogProp
               onValueChange={(value: LeatherCategory) =>
                 setFormData({ ...formData, category: value })
               }
+              disabled={categoryLoading}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select category" />
+                <SelectValue placeholder={categoryLoading ? 'Loading categories...' : 'Select category'} />
               </SelectTrigger>
               <SelectContent>
-                {LEATHER_CATEGORIES.map(c => (
-                  <SelectItem key={c.value} value={c.value}>
-                    {c.label}
+                {categories.map(c => (
+                  <SelectItem key={c} value={c}>
+                    {String(c).replace(/_/g, ' ')}
                   </SelectItem>
                 ))}
               </SelectContent>

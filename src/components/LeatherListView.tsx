@@ -5,13 +5,15 @@ import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { LeatherCategory, LeatherItem } from '../types';
 import { EditLeatherDialog } from './EditLeatherDialog';
 import { motion } from 'motion/react';
+import { leatherService } from '../services/leatherService';
+import { toast } from 'sonner';
 
 const ITEMS_PER_PAGE = 6;
-const LEATHER_CATEGORIES: { value: LeatherCategory; label: string }[] = [
-  { value: 'shoe_upper', label: 'Shoe Upper' },
-  { value: 'sports_leather', label: 'Sports Leather' },
-  { value: 'upholestry', label: 'Upholestry' },
-  { value: 'garment_and_goods', label: 'Garment & Goods' },
+const FALLBACK_CATEGORIES: LeatherCategory[] = [
+  'shoe_upper',
+  'sports_leather',
+  'upholestry',
+  'garment_and_goods',
 ];
 
 export function LeatherListView() {
@@ -20,15 +22,41 @@ export function LeatherListView() {
   const [editingItem, setEditingItem] = useState<LeatherItem | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [columns, setColumns] = useState(3);
+  const [categories, setCategories] = useState<LeatherCategory[]>(FALLBACK_CATEGORIES);
+  const [categoryLoading, setCategoryLoading] = useState<boolean>(false);
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   useEffect(() => {
-    // Always default to shoe_upper when opening Leather from sidebar
-    fetchLeather('shoe_upper');
-    setCurrentPage(1);
+    const fetchCategories = async () => {
+      try {
+        setCategoryLoading(true);
+        const unique = await leatherService.getUniqueCategories();
+        const normalized = (unique ?? []).filter(Boolean) as LeatherCategory[];
+        const nextCategories = normalized.length > 0 ? normalized : FALLBACK_CATEGORIES;
+        setCategories(nextCategories);
+
+        // Default to first category in navbar (or keep active if it exists)
+        const defaultCategory =
+          (activeCategory && nextCategories.includes(activeCategory) && activeCategory) ||
+          nextCategories[0] ||
+          'shoe_upper';
+
+        fetchLeather(defaultCategory);
+        setCurrentPage(1);
+      } catch (error: any) {
+        setCategories(FALLBACK_CATEGORIES);
+        toast.error(error?.message || 'Failed to load categories');
+        fetchLeather('shoe_upper');
+        setCurrentPage(1);
+      } finally {
+        setCategoryLoading(false);
+      }
+    };
+
+    fetchCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -84,48 +112,60 @@ export function LeatherListView() {
         {/* Category switch navbar */}
         <div
           style={{
-            display: 'flex',
-            gap: '8px',
-            padding: '6px',
-            borderRadius: '999px',
-            background: '#f3f4f6',
-            border: '1px solid #e5e7eb',
             margin: '10px 18px',
-            flexWrap: 'wrap',
-            width:"55%",
-            justifyContent: 'start',
           }}
         >
-          {LEATHER_CATEGORIES.map(cat => {
-            const active = cat.value === activeCategory;
+          <div
+            style={{
+              display: 'inline-flex',
+              flexWrap: 'wrap',
+              gap: '8px',
+              padding: '6px 10px',
+              borderRadius: '999px',
+              background: '#f3f4f6',
+              border: '1px solid #e5e7eb',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              boxSizing: 'border-box',
+              width: 'fit-content',
+              maxWidth: '100%',
+            }}
+          >
+          {(categories.length ? categories : FALLBACK_CATEGORIES).map(cat => {
+            const active = cat === activeCategory;
             return (
               <button
-                key={cat.value}
+                key={cat}
                 onClick={() => {
-                  if (cat.value === activeCategory) return;
+                  if (cat === activeCategory) return;
                   setCurrentPage(1);
-                  fetchLeather(cat.value);
+                  fetchLeather(cat);
                 }}
                 type="button"
+                disabled={categoryLoading}
                 style={{
-                  padding: '8px 16px',
+                  padding: '8px 18px',
                   borderRadius: '999px',
                   border: active ? '1px solid #b45309' : '1px solid transparent',
                   background: active ? '#b45309' : 'transparent',
                   color: active ? '#ffffff' : '#374151',
                   fontWeight: 600,
                   fontSize: '13px',
-                  cursor: 'pointer',
+                  cursor: categoryLoading ? 'not-allowed' : 'pointer',
+                  opacity: categoryLoading ? 0.7 : 1,
                   transition: 'background-color 0.18s ease, border-color 0.18s ease',
                   fontFamily: 'inherit',
-                  minWidth: '140px',
                   textAlign: 'center',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                {cat.label}
+                {String(cat)
+                  .replace(/_/g, ' ')
+                  .replace(/\b\w/g, l => l.toUpperCase())}
               </button>
             );
           })}
+          </div>
         </div>
 
         {loading && items.length === 0 ? (

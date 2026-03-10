@@ -1,33 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
-import { X } from 'lucide-react';
+import { Minus, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { useLeather } from '../context/LeatherContext';
 import { LeatherCategory } from '../types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-
-const LEATHER_CATEGORIES: { value: LeatherCategory; label: string }[] = [
-  { value: 'shoe_upper', label: 'Shoe Upper' },
-  { value: 'sports_leather', label: 'Sports Leather' },
-  { value: 'upholestry', label: 'Upholestry' },
-  { value: 'garment_and_goods', label: 'Garment & Goods' },
-];
+import { leatherService } from '../services/leatherService';
 
 export function CreateLeatherItemForm() {
   const { createLeather, loading } = useLeather();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<LeatherCategory>('shoe_upper');
+  const [category, setCategory] = useState<string>('shoe_upper');
+  const [categories, setCategories] = useState<string[]>([]);
+  const [categoryLoading, setCategoryLoading] = useState<boolean>(false);
+  const [useCustomCategory, setUseCustomCategory] = useState<boolean>(false);
+  const [customCategory, setCustomCategory] = useState<string>('');
   const [features, setFeatures] = useState<string[]>([]);
   const [featureInput, setFeatureInput] = useState('');
   const [imagePreview, setImagePreview] = useState<string>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoryLoading(true);
+        const uniqueCategories = await leatherService.getUniqueCategories();
+        setCategories(uniqueCategories);
+        if (uniqueCategories.length > 0) {
+          setCategory(prev => prev || uniqueCategories[0]);
+        }
+      } catch (error: any) {
+        const message = error.message || 'Failed to load categories';
+        toast.error(message);
+      } finally {
+        setCategoryLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleAddFeature = () => {
     if (featureInput.trim()) {
@@ -61,6 +79,13 @@ export function CreateLeatherItemForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const finalCategory = useCustomCategory ? customCategory.trim() : category;
+
+    if (!finalCategory) {
+      toast.error('Please select or enter a category');
+      return;
+    }
+
     if (!title.trim()) {
       toast.error('Please enter a title');
       return;
@@ -85,7 +110,7 @@ export function CreateLeatherItemForm() {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
-      formData.append('category', category);
+      formData.append('category', finalCategory);
       formData.append('features', JSON.stringify(features));
       formData.append('itemImageUrl', imageFile);
 
@@ -95,6 +120,8 @@ export function CreateLeatherItemForm() {
       setTitle('');
       setDescription('');
       setCategory('shoe_upper');
+      setCustomCategory('');
+      setUseCustomCategory(false);
       setFeatures([]);
       setFeatureInput('');
       setImagePreview('');
@@ -127,18 +154,65 @@ export function CreateLeatherItemForm() {
 
           <div className="space-y-2">
             <Label>Category</Label>
-            <Select value={category} onValueChange={(v: LeatherCategory) => setCategory(v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {LEATHER_CATEGORIES.map(c => (
-                  <SelectItem key={c.value} value={c.value}>
-                    {c.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              {!useCustomCategory ? (
+                <>
+                  <Select
+                    value={category}
+                    onValueChange={v => setCategory(v)}
+                    disabled={categoryLoading}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue
+                        placeholder={categoryLoading ? 'Loading categories...' : 'Select category'}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map(c => (
+                        <SelectItem key={c} value={c}>
+                          {c.replace(/_/g, ' ')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setUseCustomCategory(true);
+                      setCustomCategory('');
+                    }}
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 shrink-0 rounded-full border-amber-700 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+                    aria-label="Add new category"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Input
+                    className="flex-1"
+                    value={customCategory}
+                    onChange={e => setCustomCategory(e.target.value)}
+                    placeholder="Enter new category"
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setUseCustomCategory(false);
+                      setCustomCategory('');
+                    }}
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 shrink-0 rounded-full border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600"
+                    aria-label="Use existing category"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">
