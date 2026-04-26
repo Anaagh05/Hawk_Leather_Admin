@@ -7,17 +7,29 @@ import { ItemsListView } from './ItemsListView';
 import { CreateItemForm } from './CreateItemForm';
 import { OrdersView } from './OrdersView';
 import { ChangeStatusForm } from './ChangeStatusForm';
-import { Package, PlusCircle, ShoppingCart, Edit3, LogOut, Menu } from 'lucide-react';
+import { Package, PlusCircle, ShoppingCart, Edit3, LogOut, Menu, FileText, MapPinned } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useProducts } from '../context/ProductContext';
 import { LeatherListView } from './LeatherListView';
 import { CreateLeatherItemForm } from './CreateLeatherItemForm';
+import { CreateDescriptionForm } from './CreateDescriptionForm';
+import { CreateLocationForm } from './CreateLocationForm';
 
 interface AdminPanelProps {
   onLogout: () => void;
 }
 
-type ViewType = 'Bags' | 'Purses' | 'Belts' | 'Leather' | 'createLeather' | 'create' | 'orders' | 'changeStatus';
+type ViewType =
+  | 'Bags'
+  | 'Purses'
+  | 'Belts'
+  | 'Leather'
+  | 'createLeather'
+  | 'create'
+  | 'orders'
+  | 'changeStatus'
+  | 'createDescription'
+  | 'createLocation';
 
 export function AdminPanel({ onLogout }: AdminPanelProps) {
   const [activeView, setActiveView] = useState<ViewType>('Bags');
@@ -61,6 +73,10 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
         return <OrdersView />;
       case 'changeStatus':
         return <ChangeStatusForm />;
+      case 'createDescription':
+        return <CreateDescriptionForm />;
+      case 'createLocation':
+        return <CreateLocationForm />;
     }
   };
 
@@ -148,6 +164,24 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
             >
               <Edit3 className="w-4 h-4 mr-2" />
               Change Status
+            </Button>
+
+            <Button
+              variant={activeView === 'createDescription' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${activeView === 'createDescription' ? 'bg-amber-700 hover:bg-amber-800' : ''}`}
+              onClick={() => handleViewChange('createDescription')}
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Create Description
+            </Button>
+
+            <Button
+              variant={activeView === 'createLocation' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${activeView === 'createLocation' ? 'bg-amber-700 hover:bg-amber-800' : ''}`}
+              onClick={() => handleViewChange('createLocation')}
+            >
+              <MapPinned className="w-4 h-4 mr-2" />
+              Create Location
             </Button>
           </div>
         </div>
