@@ -95,3 +95,12 @@ export interface OrdersResponse {
   summary: OrderSummary;
   totalRevenue: number;
 }
+
+export interface Certificate {
+  id: string;
+  certificateName: string;
+  certificateDescription: string;
+  certificateImageUrl: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

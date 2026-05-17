@@ -38,7 +38,9 @@ export default function App() {
         <ProductProvider>
           <OrderProvider>
             <LeatherProvider>
-              <AdminPanel onLogout={handleLogout} />
+              <div className="h-screen overflow-hidden">
+                <AdminPanel onLogout={handleLogout} />
+              </div>
             </LeatherProvider>
           </OrderProvider>
         </ProductProvider>

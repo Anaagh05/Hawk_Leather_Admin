@@ -7,7 +7,9 @@ import { ItemsListView } from './ItemsListView';
 import { CreateItemForm } from './CreateItemForm';
 import { OrdersView } from './OrdersView';
 import { ChangeStatusForm } from './ChangeStatusForm';
-import { Package, PlusCircle, ShoppingCart, Edit3, LogOut, Menu, FileText, MapPinned } from 'lucide-react';
+import { Package, PlusCircle, ShoppingCart, Edit3, LogOut, Menu, FileText, MapPinned, Award } from 'lucide-react';
+import { CertificatesListView } from './CertificatesListView';
+import { CreateCertificateForm } from './CreateCertificateForm';
 import { motion } from 'motion/react';
 import { useProducts } from '../context/ProductContext';
 import { LeatherListView } from './LeatherListView';
@@ -24,7 +26,9 @@ type ViewType =
   | 'Purses'
   | 'Belts'
   | 'Leather'
+  | 'Certificates'
   | 'createLeather'
+  | 'createCertificate'
   | 'create'
   | 'orders'
   | 'changeStatus'
@@ -65,8 +69,17 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
             <LeatherListView />
           </div>
         );
+      case 'Certificates':
+        return (
+          <div>
+            <h2 className="mb-6 text-amber-900">Certificates</h2>
+            <CertificatesListView />
+          </div>
+        );
       case 'createLeather':
         return <CreateLeatherItemForm />;
+      case 'createCertificate':
+        return <CreateCertificateForm />;
       case 'create':
         return <CreateItemForm />;
       case 'orders':
@@ -81,13 +94,13 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
   };
 
   const renderSidebarContent = () => (
-    <>
-      <div className="p-6 border-b">
+    <div className="flex h-full min-h-0 flex-col bg-white">
+      <div className="shrink-0 p-6 border-b">
         <h1 className="text-amber-900">Hawk Exports</h1>
         <p className="text-gray-600 text-sm mt-1">Admin Panel</p>
       </div>
 
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="min-h-0 flex-1 p-4">
         <div className="space-y-2">
           <p className="text-xs uppercase text-gray-500 px-3 py-2">Categories</p>
           
@@ -127,6 +140,15 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
             Leather
           </Button>
 
+          <Button
+            variant={activeView === 'Certificates' ? 'default' : 'ghost'}
+            className={`w-full justify-start ${activeView === 'Certificates' ? 'bg-amber-700 hover:bg-amber-800' : ''}`}
+            onClick={() => handleViewChange('Certificates')}
+          >
+            <Award className="w-4 h-4 mr-2" />
+            Certificates
+          </Button>
+
           <div className="pt-4">
             <p className="text-xs uppercase text-gray-500 px-3 py-2">Actions</p>
             
@@ -146,6 +168,15 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
             >
               <PlusCircle className="w-4 h-4 mr-2" />
               Create Item
+            </Button>
+
+            <Button
+              variant={activeView === 'createCertificate' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${activeView === 'createCertificate' ? 'bg-amber-700 hover:bg-amber-800' : ''}`}
+              onClick={() => handleViewChange('createCertificate')}
+            >
+              <PlusCircle className="w-4 h-4 mr-2" />
+              Create Certificate
             </Button>
 
             <Button
@@ -187,7 +218,7 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
         </div>
       </ScrollArea>
 
-      <div className="p-4 border-t">
+      <div className="shrink-0 border-t bg-white p-4">
         <Button
           variant="outline"
           className="w-full justify-start"
@@ -197,17 +228,17 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
           Logout
         </Button>
       </div>
-    </>
+      </div>
   );
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-amber-50 to-orange-50">
+    <div className="flex h-screen min-h-0 overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50">
       {/* Desktop Sidebar - Hidden on mobile */}
       <motion.div
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="hidden md:flex w-64 bg-white shadow-xl flex-col"
+        className="hidden md:flex h-screen w-64 shrink-0 flex-col bg-white shadow-xl"
       >
         {renderSidebarContent()}
       </motion.div>
@@ -236,9 +267,9 @@ export function AdminPanel({ onLogout }: AdminPanelProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full">
-          <div className="p-4 md:p-8 pt-16 md:pt-8">
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <ScrollArea className="h-full min-h-0 bg-gradient-to-br from-amber-50 to-orange-50">
+          <div className="p-4 pb-8 md:p-8 md:pb-8 pt-16 md:pt-8">
             {renderContent()}
           </div>
         </ScrollArea>
